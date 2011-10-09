@@ -143,13 +143,14 @@ class mcbkp {
 		int last_day = (this->tms - 3600 * 24 * 5);
 		string aname = tochar (last_day);
 		
-		for (int i=0; archs.size()>i; i++)
+		for (int i=0; archs.size()<i; i++)
 		{
 			tmp = parse_fname (archs[i]);
 
 			if (tmp[0] == "mcbkp" && (atoi (tmp[1].c_str()) == last_day))
 			{
 				aname = "mc_bkps/mcbkp_"+aname+".zip";
+				cout << "delete file: " << aname << endl;
 				unlink (aname.c_str());
 				aname = "";
 			}
@@ -168,7 +169,7 @@ class mcbkp {
 		int err;
 		char errstr[1024];
 	
-		if ((za=zip_open(backup.c_str(), ZIP_CREATE|ZIP_CHECKCONS, &err)) == NULL)
+		if ((za=zip_open(backup.c_str(), ZIP_CREATE, &err)) == NULL)
 		{
 			zip_error_to_str(errstr, sizeof(errstr), err, errno);
 			fprintf(stderr, "cannot open zip archive `%s': %s\n",
@@ -176,7 +177,7 @@ class mcbkp {
 			exit(1);
 		}
 	
-		if (zip_add_dir (za, "/home/sb0y/rcon.c") <= 0)
+		if (zip_add_dir (za, "/home/sb0y/workspace/") <= 0)
 		{
 			zip_error_to_str(errstr, sizeof(errstr), err, errno);
 			fprintf(stderr, "`%s': %s\n",
@@ -196,7 +197,7 @@ int main (int argc, char **argv)
 	
 	vector<string> pfiles = main->arch_names ("/home/sb0y/mc_bkps");
 
-	main->new_backup ("/home/sb0y/mc_bkps");
+	//main->new_backup ("/home/sb0y/mc_bkps");
 
 	if (!pfiles.empty())
 	{
