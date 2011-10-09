@@ -33,7 +33,7 @@
 //#include <ctype.h>
 #include <errno.h>
 
-//#include "zip.h"
+#include "zip.h"
 using namespace std;
 
 class mcbkp {
@@ -158,33 +158,34 @@ class mcbkp {
 
 	int new_backup (string backups_dir)
 	{
-		//~ string backup = "mcbkp_" + tochar(this->tms) + ".zip";
-		//~ string cmd = "zip "+backups_dir+"/"+backup+" -rj /var/lib/minecraft/*";
+		string backup = backups_dir+"/mcbkp_" + tochar(this->tms) + ".zip";
+		//string cmd = "zip "+backups_dir+"/"+backup+" -rj /var/lib/minecraft/*";
 		//~ cout << cmd << endl;
 		//~ system (cmd.c_str());
 		
-		//~ struct zip *za;
-		//~ int zip_err;
-		//~ int err;
-		//~ char errstr[1024];
-	//~ 
-		//~ if ((za=zip_open(backup.c_str(), ZIP_CREATE|ZIP_CHECKCONS, &err)) == NULL)
-		//~ {
-			//~ zip_error_to_str(errstr, sizeof(errstr), err, errno);
-			//~ fprintf(stderr, "cannot open zip archive `%s': %s\n",
-			//~ backup.c_str(), errstr);
-			//~ exit(1);
-		//~ }
-	//~ 
-		//~ if (zip_add_dir (za, "/home/sb0y/test") <= 0)
-		//~ {
-			//~ zip_error_to_str(errstr, sizeof(errstr), err, errno);
-			//~ fprintf(stderr, "`%s': %s\n",
-			//~ backup.c_str(), errstr);
-			//~ exit(1);
-		//~ }
-	//~ 
-		//~ zip_close(za);
+		struct zip *za;
+		int zip_err;
+		int err;
+		char errstr[1024];
+	
+		if ((za=zip_open(backup.c_str(), ZIP_CREATE|ZIP_CHECKCONS, &err)) == NULL)
+		{
+			zip_error_to_str(errstr, sizeof(errstr), err, errno);
+			fprintf(stderr, "cannot open zip archive `%s': %s\n",
+			backup.c_str(), errstr);
+			exit(1);
+		}
+	
+		if (zip_add_dir (za, "/home/sb0y/rcon.c") <= 0)
+		{
+			zip_error_to_str(errstr, sizeof(errstr), err, errno);
+			fprintf(stderr, "`%s': %s\n",
+			backup.c_str(), errstr);
+			zip_close(za);
+			exit(1);
+		}
+	
+		zip_close(za);
 	}
 };
 
