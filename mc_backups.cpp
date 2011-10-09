@@ -143,13 +143,13 @@ class mcbkp {
 		int last_day = (this->tms - 3600 * 24 * 5);
 		string aname = tochar (last_day);
 		
-		for (int i=0; archs.size()<i; i++)
+		for (int i=0; archs.size()>i; i++)
 		{
 			tmp = parse_fname (archs[i]);
 
-			if (tmp[0] == "mcbkp" && (atoi (tmp[1].c_str()) == last_day))
+			if (tmp[0] == "mcbkp" && (atoi (tmp[1].c_str()) <= last_day))
 			{
-				aname = "mc_bkps/mcbkp_"+aname+".zip";
+				aname = "/home/sb0y/mc_bkps/mcbkp_"+tmp[1]+".zip";
 				cout << "delete file: " << aname << endl;
 				unlink (aname.c_str());
 				aname = "";
@@ -179,6 +179,7 @@ class mcbkp {
 	
 		if (zip_add_dir (za, "/home/sb0y/workspace/") <= 0)
 		{
+			cout << "hello" << endl;
 			zip_error_to_str(errstr, sizeof(errstr), err, errno);
 			fprintf(stderr, "`%s': %s\n",
 			backup.c_str(), errstr);
@@ -197,7 +198,7 @@ int main (int argc, char **argv)
 	
 	vector<string> pfiles = main->arch_names ("/home/sb0y/mc_bkps");
 
-	//main->new_backup ("/home/sb0y/mc_bkps");
+	main->new_backup ("/home/sb0y/mc_bkps");
 
 	if (!pfiles.empty())
 	{
