@@ -21,19 +21,24 @@
 #include <iostream>
 #include <stdio.h>
 #include <time.h>
-#include <string>
-#include <string.h>
+#include <cstring>
 #include <vector>
 #include <stdlib.h>
 
 #include <dirent.h>
 #include <unistd.h>
 #include <sys/stat.h>
-//#include <sys/types.h>
-//#include <ctype.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <stdlib.h>
+#include <libtar.h>
+#include <bzlib.h>
+#include <unistd.h>
+
 #include <errno.h>
 
-#include "zip.h"
+//#include "zip.h"
 using namespace std;
 
 class mcbkp {
@@ -159,35 +164,20 @@ class mcbkp {
 
 	int new_backup (string backups_dir)
 	{
-		string backup = backups_dir+"/mcbkp_" + tochar(this->tms) + ".zip";
+		string backup = "mcbkp_" + tochar(this->tms) + ".tar";
 		//string cmd = "zip "+backups_dir+"/"+backup+" -rj /var/lib/minecraft/*";
 		//~ cout << cmd << endl;
 		//~ system (cmd.c_str());
 		
-		struct zip *za;
-		int zip_err;
-		int err;
-		char errstr[1024];
-	
-		if ((za=zip_open(backup.c_str(), ZIP_CREATE, &err)) == NULL)
-		{
-			zip_error_to_str(errstr, sizeof(errstr), err, errno);
-			fprintf(stderr, "cannot open zip archive `%s': %s\n",
-			backup.c_str(), errstr);
-			exit(1);
-		}
-	
-		if (zip_add_dir (za, "/home/sb0y/workspace/") <= 0)
-		{
-			cout << "hello" << endl;
-			zip_error_to_str(errstr, sizeof(errstr), err, errno);
-			fprintf(stderr, "`%s': %s\n",
-			backup.c_str(), errstr);
-			zip_close(za);
-			exit(1);
-		}
-	
-		zip_close(za);
+		TAR *pTar;
+		char srcDir[] = "mc_bkps/";
+		char extractTo[] = ".";
+
+		tar_open(&pTar, (char*)backup.c_str(), NULL, O_WRONLY | O_CREAT, 0644, TAR_GNU);
+		tar_append_tree(pTar, srcDir, extractTo);
+
+		close(tar_fd(pTar));
+
 	}
 };
 
