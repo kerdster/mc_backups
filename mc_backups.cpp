@@ -86,7 +86,6 @@ class mcbkp {
 			tmp[len] = '/';
 			tmp[len+1] = '\0';
 
-			delete tmp;
 			return tmp;
 		}
 		return str;
