@@ -66,7 +66,11 @@ class mcbkp {
 
 	char* check_slash (char* str)
 	{
-		//char *_str = const_cast<char*> (str); 
+		if (!str)
+		{
+			cout << "MEGOFAIL." << endl;
+			exit (0);
+		}
 
 		int len = strlen (str);
 		
