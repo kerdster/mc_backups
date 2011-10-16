@@ -68,8 +68,7 @@ class mcbkp {
 	{
 		if (!str)
 		{
-			cout << "MEGOFAIL." << endl;
-			exit (0);
+			return 0;
 		}
 
 		int len = strlen (str);
