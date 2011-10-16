@@ -208,7 +208,6 @@ class mcbkp {
 		//backup = backup+"/"+"mcbkp_" +  tochar(tms) + ".tar";
 		 
 		TAR *pTar;
-		char extractTo[] = ".";
 		string gd = game_dir;
 
 		if (tar_open(&pTar, (char*)backup.c_str(), NULL, O_WRONLY | O_CREAT, 0644, TAR_GNU) != 0)
@@ -217,7 +216,7 @@ class mcbkp {
 			exit (1);
 		}
 
-		if (tar_append_tree(pTar, (char*)gd.c_str(), extractTo) != 0)
+		if (tar_append_tree(pTar, (char*)gd.c_str(), (char*)".") != 0)
 		{
 			cout << "error: " << strerror(errno) << endl;
 			exit (1);
