@@ -248,7 +248,7 @@ class mcbkp {
 
 int main (int argc, char **argv)
 {
-	if (argc < 2)
+	if (argc <= 2)
 	{
 		cout << "Fail. Usage: " << argv[0] << " <game_directory> <backups_directory>" << endl;
 		exit (0);
