@@ -46,6 +46,7 @@ class mcbkp {
 
 	protected:
 	time_t tms;
+	struct tm *tm;
 	const char* game_dir;
 	const char* bdir;
 	public:
@@ -56,6 +57,8 @@ class mcbkp {
 		game_dir = check_slash(_game_dir);
 		bdir = check_slash(_bdir);
 		time (&tms);
+		tm = localtime (&tms);
+		tm->tm_year = tm->tm_year + 1900;
 	}
 
 	~mcbkp()
@@ -89,6 +92,15 @@ class mcbkp {
 			return tmp;
 		}
 		return str;
+	}
+
+	time_t get_modtime (const char* file)
+	{
+		//struct tm* clock;				// create a time structure
+		struct stat attrib;			// create a file attribute structure
+		stat(file, &attrib);		// get the attributes of afile.txt
+		//clock = gmtime(&(attrib.st_mtime));	// Get the last modified time and put it into the time structure
+		return attrib.st_mtime;
 	}
 	
 	bool arch_names ()
@@ -182,16 +194,18 @@ class mcbkp {
 	bool find_last_day()
 	{
 		vector<string> tmp;
-		int last_day = (this->tms - 3600 * 24 * 5);
+		int last_day = (tms - (3600 * 24 * 5));
 		string aname = tochar (last_day);
-		
+		int tms;
+	
 		for (int i=0; pfiles.size()>i; i++)
 		{
 			tmp = parse_fname (pfiles[i]);
+			tms = get_modtime(pfiles[i].insert(0, bdir).c_str());
 
-			if (tmp[0] == "mcbkp" && (atoi (tmp[1].c_str()) <= last_day))
+			if (tmp[0] == "mcbkp" && (tms < last_day))
 			{
-				aname = string(bdir)+"/mcbkp_"+tmp[1]+".tar";
+				aname = string(bdir)+"mcbkp_"+tmp[1]+".tar";
 				cout << "deleting file: " << aname << endl;
 				unlink (aname.c_str());
 				aname = "";
@@ -203,7 +217,8 @@ class mcbkp {
 
 	bool new_backup()
 	{
-		string backup = string(bdir)+"mcbkp_" + tochar(this->tms) + ".tar";
+		string backup = string(bdir)+"mcbkp_" + tochar(tm->tm_mday) + "-" + tochar(tm->tm_mon) + "-" + tochar(tm->tm_year) + "-"
+		+ tochar(tm->tm_min) + "-" + tochar(tm->tm_sec) + ".tar";
 		//string backup = bdir;
 		//backup = backup+"/"+"mcbkp_" +  tochar(tms) + ".tar";
 		 
@@ -212,13 +227,13 @@ class mcbkp {
 
 		if (tar_open(&pTar, (char*)backup.c_str(), NULL, O_WRONLY | O_CREAT, 0644, TAR_GNU) != 0)
 		{
-			cout << "error: " << strerror(errno) << endl;
+			cout << "Tar error: " << strerror(errno) << endl;
 			exit (1);
 		}
 
 		if (tar_append_tree(pTar, (char*)gd.c_str(), (char*)".") != 0)
 		{
-			cout << "error: " << strerror(errno) << endl;
+			cout << "Tar error: " << strerror(errno) << endl;
 			exit (1);
 		}
 		 
